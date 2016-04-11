@@ -26,16 +26,24 @@ class ViewController: UIViewController {
     }
     
     func createSessionAndConnect() {
-        if self.session == nil {
+        if self.session?.sessionConnectionStatus != OTSessionConnectionStatus.Connected {
             session = OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)
             NSLog("Connecting to session \(kSessionId)...\n")
             session!.connectWithToken(kToken, error: nil)
         } else {
             NSLog("Skipped createSessionAndConnect()\n")
         }
+//        if self.session == nil {
+//            self.session = OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)
+//            NSLog("Connecting to session \(self.session)...\n")
+//            self.session!.connectWithToken(kToken, error: nil)
+//            firstTime = true
+//        } else {
+//            NSLog("Skipped createSessionAndConnect()\n")
+//        }
     }
     
-    var firstTime = true
+//    var firstTime = true
     
     func reachabilityChanged(n: NSNotification) {
         print("Reachability Changed")
@@ -46,10 +54,10 @@ class ViewController: UIViewController {
             fallthrough
         case ReachableViaWWAN:
             print("------> WAN OR WIFI")
-            if firstTime {
-                firstTime = false
-                return
-            }
+//            if firstTime {
+//                firstTime = false
+//                return
+//            }
             session?.disconnect(nil)
             createSessionAndConnect()
         case NotReachable:
@@ -81,7 +89,10 @@ extension ViewController: OTSessionDelegate {
         print("Session failed with error: \(error)")
     }
     
-    func session(session: OTSession!, streamCreated stream: OTStream!) { }
+    func session(session: OTSession!, streamCreated stream: OTStream!) {
+        let subscriber = OTSubscriber(stream: stream, delegate: self)
+        self.session?.subscribe(subscriber, error: nil)
+    }
     
     func session(session: OTSession!, streamDestroyed stream: OTStream!) {
     }
@@ -104,3 +115,16 @@ extension ViewController: OTPublisherDelegate {
     func publisher(publisher: OTPublisherKit!, didFailWithError error: OTError!) { }
 }
 
+extension ViewController: OTSubscriberKitDelegate {
+    
+    func subscriberDidConnectToStream(subscriberKit: OTSubscriberKit!) {
+        NSLog("Subscriber did connect to stream streamId: \(subscriberKit.stream.streamId)")
+    }
+    
+    func subscriber(subscriber: OTSubscriberKit!, didFailWithError error: OTError!) {
+        NSLog("Subscriber did fail -> \(error)")
+    }
+    
+    
+    
+}
