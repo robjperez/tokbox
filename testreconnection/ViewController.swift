@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     let reachability = Reachability(hostName: "www.tokbox.com")
     var session : OTSession?
     var publisher: OTPublisher?
+    var subscribers = [OTSubscriber]()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,6 +44,14 @@ class ViewController: UIViewController {
 //        }
     }
     
+    func clearSubscribers() {
+        for sub in subscribers {
+            sub.view.removeFromSuperview()
+        }
+
+        subscribers.removeAll()
+    }
+
 //    var firstTime = true
     
     func reachabilityChanged(n: NSNotification) {
@@ -62,7 +71,8 @@ class ViewController: UIViewController {
             createSessionAndConnect()
         case NotReachable:
             print("------> NOT REACHABLE")
-            session?.disconnect(nil)   // <<<<<<<<<<< NEVER CALLED
+            clearSubscribers()
+            session?.disconnect(nil)
         default:
             print("Unknown network status")
         }
@@ -82,7 +92,6 @@ extension ViewController: OTSessionDelegate {
     func sessionDidDisconnect(session: OTSession!) {
         print("Session Disconnected")
         self.session = nil
-        createSessionAndConnect()
     }
     
     func session(session: OTSession!, didFailWithError error: OTError!) {
@@ -90,7 +99,9 @@ extension ViewController: OTSessionDelegate {
     }
     
     func session(session: OTSession!, streamCreated stream: OTStream!) {
+        print("Stream created \(stream.streamId)")
         let subscriber = OTSubscriber(stream: stream, delegate: self)
+        subscribers.append(subscriber)
         self.session?.subscribe(subscriber, error: nil)
     }
     
@@ -118,9 +129,16 @@ extension ViewController: OTPublisherDelegate {
 extension ViewController: OTSubscriberKitDelegate {
     
     func subscriberDidConnectToStream(subscriberKit: OTSubscriberKit!) {
+        let sub = self.subscribers.filter { (sub) -> Bool in
+            return sub.stream.streamId == subscriberKit.stream.streamId
+        }[0]
+        sub.view.frame = CGRect(origin: CGPoint(x: 0, y: 320),
+                                size: CGSize(width: 160, height: 120))
+        self.view.addSubview(sub.view)
+
         NSLog("Subscriber did connect to stream streamId: \(subscriberKit.stream.streamId)")
     }
-    
+
     func subscriber(subscriber: OTSubscriberKit!, didFailWithError error: OTError!) {
         NSLog("Subscriber did fail -> \(error)")
     }
