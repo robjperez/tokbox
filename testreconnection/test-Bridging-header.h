@@ -11,5 +11,6 @@
 
 #import <Opentok/Opentok.h>
 #import "Reachability.h"
+#import "OTKLogger.h"
 
 #endif /* test_Bridging_header_h */
