@@ -8,22 +8,71 @@
 
 import UIKit
 import OpenTok
+import ReachabilitySwift
+
+enum NetworkStatus {
+    case Wifi
+    case Cellular
+    case NotReachable
+}
 
 class ViewController: UIViewController {
     let kApiKey = ""
     let kSessionId = ""
-    let kToken = ""
+    let kToken = "
+    "
     
-    let reachability = Reachability(hostName: "www.tokbox.com")
+    var reachability: Reachability?
     var session : OTSession?
     var publisher: OTPublisher?
     var subscribers = [OTSubscriber]()
+    var networkStatus : NetworkStatus = .NotReachable
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.setupReachability()
+    }
+    
+    func setupReachability() {
+        do {
+            self.reachability = try Reachability.reachabilityForInternetConnection()
+        } catch {
+            NSLog("::: Reachability -> Unable to create Reachability")
+            return
+        }
+        reachability!.whenReachable = { reachability in
+            dispatch_async(dispatch_get_main_queue(), { 
+                if self.networkStatus != .NotReachable {
+                    NSLog("::: Reachability -> Switch between Wifi and Cellular")
+                    var error: OTError?
+                    self.session?.disconnect(&error)
+                }
+                if reachability.isReachableViaWiFi() {
+                    self.networkStatus = .Wifi
+                    NSLog("::: Reachability -> Reachable via WiFi")
+                    self.createSessionAndConnect()
+                } else {
+                    self.networkStatus = .Cellular
+                    NSLog("::: Reachability -> Reachable via Cellular")
+                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(5 * Double(NSEC_PER_SEC)))
+                    dispatch_after(delayTime, dispatch_get_main_queue()) {
+                        self.createSessionAndConnect()
+                    }
+                }
+            })
+        }
+        reachability!.whenUnreachable = { reachability in
+            dispatch_async(dispatch_get_main_queue(), { 
+                NSLog("::: Reachability -> Not reachable")
+                self.networkStatus = .NotReachable
+            })
+        }
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(ViewController.reachabilityChanged(_:)), name: kReachabilityChangedNotification, object: reachability)
-        reachability.startNotifier()
+        do {
+            try reachability!.startNotifier()
+        } catch {
+            print("Unable to start notifier")
+        }
     }
     
     func createSessionAndConnect() {
@@ -34,14 +83,6 @@ class ViewController: UIViewController {
         } else {
             NSLog("Skipped createSessionAndConnect()\n")
         }
-//        if self.session == nil {
-//            self.session = OTSession(apiKey: kApiKey, sessionId: kSessionId, delegate: self)
-//            NSLog("Connecting to session \(self.session)...\n")
-//            self.session!.connectWithToken(kToken, error: nil)
-//            firstTime = true
-//        } else {
-//            NSLog("Skipped createSessionAndConnect()\n")
-//        }
     }
     
     func clearSubscribers() {
@@ -51,37 +92,11 @@ class ViewController: UIViewController {
 
         subscribers.removeAll()
     }
-
-//    var firstTime = true
-    
-    func reachabilityChanged(n: NSNotification) {
-        print("Reachability Changed")
-        
-        print("Current status: \(reachability.currentReachabilityStatus())")
-        switch reachability.currentReachabilityStatus() {
-        case ReachableViaWiFi:
-            fallthrough
-        case ReachableViaWWAN:
-            print("------> WAN OR WIFI")
-//            if firstTime {
-//                firstTime = false
-//                return
-//            }
-            session?.disconnect(nil)
-            createSessionAndConnect()
-        case NotReachable:
-            print("------> NOT REACHABLE")
-            clearSubscribers()
-            session?.disconnect(nil)
-        default:
-            print("Unknown network status")
-        }
-    }
 }
 
 extension ViewController: OTSessionDelegate {
     func sessionDidConnect(session: OTSession!) {
-        print("Session Connected")
+        NSLog("Session Connected")
         
         if publisher == nil {
             publisher = OTPublisher(delegate: self)
@@ -90,16 +105,16 @@ extension ViewController: OTSessionDelegate {
     }
     
     func sessionDidDisconnect(session: OTSession!) {
-        print("Session Disconnected")
+        NSLog("Session Disconnected")
         self.session = nil
     }
     
     func session(session: OTSession!, didFailWithError error: OTError!) {
-        print("Session failed with error: \(error)")
+        NSLog("Session failed with error: \(error)")
     }
     
     func session(session: OTSession!, streamCreated stream: OTStream!) {
-        print("Stream created \(stream.streamId)")
+        NSLog("Stream created \(stream.streamId)")
         let subscriber = OTSubscriber(stream: stream, delegate: self)
         subscribers.append(subscriber)
         self.session?.subscribe(subscriber, error: nil)
@@ -111,14 +126,14 @@ extension ViewController: OTSessionDelegate {
 
 extension ViewController: OTPublisherDelegate {
     func publisher(publisher: OTPublisherKit!, streamCreated stream: OTStream!) {
-        print("Stream created")
+        NSLog("Stream created")
         
         self.publisher?.view.frame = CGRect(x: 0, y: 0, width: 320, height: 240)
         self.view.addSubview(self.publisher!.view)
     }
     
     func publisher(publisher: OTPublisherKit!, streamDestroyed stream: OTStream!) {
-        print("Stream destroyed")
+        NSLog("Stream destroyed")
         
         session?.disconnect(nil)
     }
