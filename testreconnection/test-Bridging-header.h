@@ -10,7 +10,6 @@
 #define test_Bridging_header_h
 
 #import <Opentok/Opentok.h>
-#import "Reachability.h"
 #import "EnableCellular.h"
 
 #endif /* test_Bridging_header_h */
