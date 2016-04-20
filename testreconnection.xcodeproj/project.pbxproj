@@ -7,18 +7,17 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		770B285C31A8D5BB6485C81F /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 76AEA2A3E03F788ACAA2419E /* libPods.a */; };
+		E8A43ABFE8B9732220E1C04B /* Pods.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 3CF7F90B85675E2DA98CFAB9 /* Pods.framework */; };
 		F88C2D031CBF94ED00B96326 /* EnableCellular.m in Sources */ = {isa = PBXBuildFile; fileRef = F88C2D021CBF94ED00B96326 /* EnableCellular.m */; };
 		F8EA07561CB2995E00CE318D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA07551CB2995E00CE318D /* AppDelegate.swift */; };
 		F8EA07581CB2995E00CE318D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8EA07571CB2995E00CE318D /* ViewController.swift */; };
 		F8EA075B1CB2995E00CE318D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8EA07591CB2995E00CE318D /* Main.storyboard */; };
 		F8EA075D1CB2995E00CE318D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F8EA075C1CB2995E00CE318D /* Assets.xcassets */; };
 		F8EA07601CB2995E00CE318D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F8EA075E1CB2995E00CE318D /* LaunchScreen.storyboard */; };
-		F8EA076A1CB2CB2500CE318D /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = F8EA07691CB2CB2500CE318D /* Reachability.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		76AEA2A3E03F788ACAA2419E /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		3CF7F90B85675E2DA98CFAB9 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C15E96A56D1FD390B752963F /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 		F64B0AE4D8CAFC1EC6381DE9 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		F88C2D011CBF94ED00B96326 /* EnableCellular.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EnableCellular.h; sourceTree = "<group>"; };
@@ -31,8 +30,6 @@
 		F8EA075F1CB2995E00CE318D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F8EA07611CB2995E00CE318D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F8EA07671CB29A9C00CE318D /* test-Bridging-header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "test-Bridging-header.h"; sourceTree = "<group>"; };
-		F8EA07681CB2CB2500CE318D /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
-		F8EA07691CB2CB2500CE318D /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -40,7 +37,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				770B285C31A8D5BB6485C81F /* libPods.a in Frameworks */,
+				E8A43ABFE8B9732220E1C04B /* Pods.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,7 +47,7 @@
 		6B60369E99FB7C42629E188D /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				76AEA2A3E03F788ACAA2419E /* libPods.a */,
+				3CF7F90B85675E2DA98CFAB9 /* Pods.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -92,8 +89,6 @@
 				F8EA075E1CB2995E00CE318D /* LaunchScreen.storyboard */,
 				F8EA07611CB2995E00CE318D /* Info.plist */,
 				F8EA07671CB29A9C00CE318D /* test-Bridging-header.h */,
-				F8EA07681CB2CB2500CE318D /* Reachability.h */,
-				F8EA07691CB2CB2500CE318D /* Reachability.m */,
 				F88C2D011CBF94ED00B96326 /* EnableCellular.h */,
 				F88C2D021CBF94ED00B96326 /* EnableCellular.m */,
 			);
@@ -223,7 +218,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F8EA07581CB2995E00CE318D /* ViewController.swift in Sources */,
-				F8EA076A1CB2CB2500CE318D /* Reachability.m in Sources */,
 				F8EA07561CB2995E00CE318D /* AppDelegate.swift in Sources */,
 				F88C2D031CBF94ED00B96326 /* EnableCellular.m in Sources */,
 			);

@@ -10,12 +10,6 @@ import UIKit
 import OpenTok
 import ReachabilitySwift
 
-enum NetworkStatus {
-    case Wifi
-    case Cellular
-    case NotReachable
-}
-
 class ViewController: UIViewController {
     static let kApiKey = ""
     static let kSessionId = ""
@@ -25,8 +19,11 @@ class ViewController: UIViewController {
     var session : OTSession?
     var publisher: OTPublisher?
     var subscribers = [OTSubscriber]()
-    var previousReachabilityStatus : NetworkStatus = NetworkStatus.init(0)
+    var previousReachabilityStatus : Reachability.NetworkStatus = .NotReachable
     var needToReconnect = false
+    var networkStatus : Reachability.NetworkStatus = .NotReachable
+    
+    var myPreviousStreamId: String?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,19 +39,19 @@ class ViewController: UIViewController {
         }
         reachability!.whenReachable = { reachability in
             dispatch_async(dispatch_get_main_queue(), { 
-                if self.networkStatus != .NotReachable {
+                if reachability.currentReachabilityStatus != .NotReachable {
                     NSLog("::: Reachability -> Switch between Wifi and Cellular")
                     var error: OTError?
                     self.session?.disconnect(&error)
                 }
                 if reachability.isReachableViaWiFi() {
-                    self.networkStatus = .Wifi
+                    self.networkStatus = .ReachableViaWiFi
                     NSLog("::: Reachability -> Reachable via WiFi")
                     self.createSessionAndConnect()
                 } else {
-                    self.networkStatus = .Cellular
+                    self.networkStatus = .ReachableViaWWAN
                     NSLog("::: Reachability -> Reachable via Cellular")
-                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(5 * Double(NSEC_PER_SEC)))
+                    let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(3 * Double(NSEC_PER_SEC)))
                     dispatch_after(delayTime, dispatch_get_main_queue()) {
                         self.createSessionAndConnect()
                     }
@@ -77,8 +74,8 @@ class ViewController: UIViewController {
     
     func createSessionAndConnect() {
         self.clearSubscribers()
-        let currentStatus = self.reachability.currentReachabilityStatus()
-        EnableCellular.setCellularEnabled(currentStatus == NetworkStatus.init(2))
+        let currentStatus = self.reachability!.currentReachabilityStatus
+        EnableCellular.setCellularEnabled(currentStatus == .ReachableViaWWAN)
             // Enable 3G connectivty when connected to a WWAN
         assert(self.session?.sessionConnectionStatus != OTSessionConnectionStatus.Connected)
         self.session = OTSession(apiKey: ViewController.kApiKey, sessionId: ViewController.kSessionId, delegate: self)
@@ -94,12 +91,10 @@ class ViewController: UIViewController {
         subscribers.removeAll()
     }
     
-    var aa = true;
-    
     func reachabilityChanged(n: NSNotification) {
         dispatch_async(dispatch_get_main_queue()) {
             print("Reachability Changed")
-            let currentStatus = self.reachability.currentReachabilityStatus()
+            let currentStatus = self.reachability!.currentReachabilityStatus
             
             print("Current status: \(currentStatus)")
             
@@ -167,6 +162,10 @@ extension ViewController: OTSessionDelegate {
     }
     
     func session(session: OTSession!, streamCreated stream: OTStream!) {
+        if stream.streamId == self.myPreviousStreamId {
+            print("Skipping stream since it was my previous stream before reconnecting")
+            return
+        }
         let subscriber = OTSubscriber(stream: stream, delegate: self)
         subscribers.append(subscriber)
         session.subscribe(subscriber, error: nil)
@@ -178,13 +177,15 @@ extension ViewController: OTSessionDelegate {
 
 extension ViewController: OTPublisherDelegate {
     func publisher(publisher: OTPublisherKit!, streamCreated stream: OTStream!) {
-        print("Publisher stream created: \(publisher.stream.streamId)")        
+        print("Publisher stream created: \(publisher.stream.streamId)")
+        self.myPreviousStreamId = publisher.stream.streamId
         self.publisher?.view.frame = CGRect(x: 0, y: 0, width: 320, height: 240)
         self.view.addSubview(self.publisher!.view)
     }
     
     func publisher(publisher: OTPublisherKit!, streamDestroyed stream: OTStream!) {
         print("Publisher Stream destroyed: \(stream.streamId)")
+        self.myPreviousStreamId = stream.streamId
         self.publisher?.view.removeFromSuperview()
         session?.disconnect(nil)
     }
