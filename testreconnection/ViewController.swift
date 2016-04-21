@@ -30,6 +30,26 @@ class ViewController: UIViewController {
         self.setupReachability()
     }
     
+    @IBOutlet weak var muteSub: UIButton!
+    @IBOutlet weak var mutePub: UIButton!
+    
+    @IBAction func muteSub(sender: AnyObject) {
+        if subscribers.count <= 0 { return }
+        
+        self.subscribers[0].subscribeToAudio = !self.subscribers[0].subscribeToAudio
+        self.muteSub.setTitle(self.subscribers[0].subscribeToAudio ? "Mute Sub" : "Unmute Sub", forState: .Normal)
+    }
+    
+    @IBAction func mutePub(sender: AnyObject) {
+        guard let pub = self.publisher
+            else {
+                print("Pub not set")
+                return
+        }
+        pub.publishAudio = !pub.publishAudio
+        self.mutePub.setTitle(pub.publishAudio ? "Mute Pub": "Unmute Pub", forState: .Normal)
+    }
+    
     func setupReachability() {
         do {
             self.reachability = try Reachability.reachabilityForInternetConnection()

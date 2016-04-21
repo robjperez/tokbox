@@ -14,13 +14,35 @@
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="VAt-J5-dfJ">
+                                <rect key="frame" x="152" y="330" width="129" height="30"/>
+                                <state key="normal" title="Mute Pub"/>
+                                <connections>
+                                    <action selector="mutePub:" destination="BYZ-38-t0r" eventType="touchUpInside" id="w7o-sQ-QEd"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="mLc-Wv-Fkh">
+                                <rect key="frame" x="152" y="373" width="129" height="30"/>
+                                <state key="normal" title="Mute Sub"/>
+                                <connections>
+                                    <action selector="muteSub:" destination="BYZ-38-t0r" eventType="touchUpInside" id="xwx-bX-Mzx"/>
+                                </connections>
+                            </button>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
                     </view>
+                    <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
+                    <connections>
+                        <outlet property="mutePub" destination="VAt-J5-dfJ" id="cxd-qh-Zpb"/>
+                        <outlet property="muteSub" destination="mLc-Wv-Fkh" id="xqW-Zp-X1A"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="702" y="373"/>
         </scene>
     </scenes>
 </document>
